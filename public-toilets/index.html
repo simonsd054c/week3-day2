@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Toilets</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.2.0/papaparse.js"></script>
+</head>
+
+<body>
+    <!-- Do your HTML elements here -->
+    <h1>Public Toilets in Australia</h1>
+    <div id="content"></div>
+
+
+    <script>
+        function displayData(data) {
+            // Your code here to display data on the page
+            let contentDiv = document.getElementById("content")
+
+            data.forEach((toilet) => {
+                let toiletDiv = document.createElement("div")
+                let nameDiv = document.createElement("div")
+                nameDiv.textContent = toilet.Name
+                nameDiv.style.marginLeft = "5px"
+                let addressDiv = document.createElement("div")
+                addressDiv.textContent = toilet.Address1
+                addressDiv.style.marginLeft = "15px"
+                let townDiv = document.createElement("div")
+                townDiv.textContent = toilet.Town
+                townDiv.style.marginLeft = "15px"
+                toiletDiv.append(nameDiv, addressDiv, townDiv)
+                toiletDiv.style.marginBottom = "15px"
+                contentDiv.append(toiletDiv)
+            })
+
+            
+
+        }
+
+        function arrangeDataByPostcode(data) {
+            // You can use this function to implement the bonus challenge
+            // console.log(data)
+
+            //What we have
+            // [
+            //     {
+            //         Name: "",
+            //         State: ""
+            //     },
+            //     {
+            //         Name: "",
+            //         State: ""
+            //     }
+            // ]
+
+            //What we need
+            // { - toiletByState
+            //     "WA": [
+            //         {
+            //             Name: "",
+            //             State: ""
+            //         },
+            //         {
+            //             Name: "",
+            //             State: ""
+            //         }
+            //     ],
+            //     "TAS": [
+            //         {
+            //             Name: "",
+            //             State: ""
+            //         },
+            //         {
+            //             Name: "",
+            //             State: ""
+            //         }
+            //     ]
+            // }
+
+
+            let toiletByState = {}
+            data.forEach((toilet) => {
+                let state = toilet.State // WA
+                if(!toiletByState.hasOwnProperty(state)) {
+                    toiletByState[state] = [toilet]
+                } else {
+                    toiletByState[state].push(toilet)
+                }
+            })
+            // console.log(toiletByState)
+            return toiletByState
+        }
+
+        function displayDataByPostcode(data) {
+            // You can use this function to implement the bonus challenge
+            let arrangedData = arrangeDataByPostcode(data)
+            // console.log(arrangedData)
+
+            let contentDiv = document.getElementById("content")
+
+            Object.entries(arrangedData).forEach((data) => {
+                let state = data[0]
+                let toilets = data[1]
+                let stateDiv = document.createElement("div")
+                let stateH = document.createElement("h1")
+                stateH.textContent = state
+                stateDiv.append(stateH)
+                contentDiv.append(stateDiv)
+
+                displayData(toilets)
+            })
+        }
+
+        Papa.parse("https://data.gov.au/data/dataset/553b3049-2b8b-46a2-95e6-640d7986a8c1/resource/34076296-6692-4e30-b627-67b7c4eb1027/download/toiletmapexport_200702_111356.csv", {
+            download: true,
+            header: true,
+            complete: function (results) {
+                // To see the data that a public toilet has in this API, 
+                // check the browser console!
+                // console.log(results.data[1]);
+            
+                // implement your solution in the displayData function
+                // displayData(results.data);
+
+                // bonus
+                displayDataByPostcode(results.data);
+              
+            }
+        });
+
+    </script>
+</body>
+
+</html>
